@@ -24,13 +24,18 @@ import lombok.NoArgsConstructor;
 @Getter
 public class UserInfo implements UserDetails {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3602483006446302096L;
+
     @Id
-    @Column
+    @Column(name = "code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
 
-    @Column(name = "id", unique = true)
-    private String id;
+    @Column(name = "email", unique = true)
+    private String email;
 
     @Column(name = "password")
     private String password;
@@ -39,8 +44,8 @@ public class UserInfo implements UserDetails {
     private String auth;
 
     @Builder
-    public UserInfo(String id, String password, String auth) {
-        this.id = id;
+    public UserInfo(String email, String password, String auth) {
+        this.email = email;
         this.password = password;
         this.auth = auth;
     }
@@ -56,7 +61,7 @@ public class UserInfo implements UserDetails {
 
     @Override
     public String getUsername() {
-        return id;
+        return email;
     }
 
     @Override

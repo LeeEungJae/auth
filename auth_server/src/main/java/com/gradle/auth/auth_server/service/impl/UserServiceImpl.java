@@ -6,7 +6,6 @@ import com.gradle.auth.auth_server.entity.UserInfoRepository;
 import com.gradle.auth.auth_server.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,18 +22,16 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+    public UserInfo loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userInfoRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException((email)));
     }
 
-    @Override
     public Long save(UserInfoDto infoDto) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         infoDto.setPassword(encoder.encode(infoDto.getPassword()));
 
-        return userInfoRepository.save(
-                UserInfo.builder().id(infoDto.getId()).auth(infoDto.getAuth()).password(infoDto.getPassword()).build())
-                .getCode();
+        return userInfoRepository.save(UserInfo.builder().email(infoDto.getEmail()).auth(infoDto.getAuth())
+                .password(infoDto.getPassword()).build()).getCode();
     }
 
 }
