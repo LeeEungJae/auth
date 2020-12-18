@@ -43,7 +43,6 @@ public class UserController {
 
     @PostMapping("/api/signup")
     public Map<String, Object> signUp(@RequestBody UserInfoDto userInfo) {
-        System.out.println(userInfo);
         String email = userInfo.getEmail();
         Map<String, Object> map = new HashMap<>();
         if (userInfoRepository.findByEmail(email).isEmpty()) {

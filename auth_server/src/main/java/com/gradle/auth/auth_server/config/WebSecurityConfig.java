@@ -1,5 +1,7 @@
 package com.gradle.auth.auth_server.config;
 
+import java.util.Arrays;
+
 import com.gradle.auth.auth_server.component.JwtAuthenticationEntryPoint;
 import com.gradle.auth.auth_server.interceptor.JwtFilter;
 import com.gradle.auth.auth_server.service.impl.UserServiceImpl;
@@ -37,10 +39,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
 
-        http.httpBasic().disable().csrf().disable().headers().frameOptions().disable().and().sessionManagement()
+        http.httpBasic().disable().cors().and().csrf().disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers("/api/signup", "/api/signin").permitAll().anyRequest().authenticated().and().formLogin()
-                .disable().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
+                .antMatchers("/api/signin", "/api/signup").permitAll().and().authorizeRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN").and().authorizeRequests().antMatchers("/user/**")
+                .hasAnyRole("USER", "ADMIN").and().authorizeRequests().anyRequest().authenticated().and()
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     }
@@ -48,12 +52,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // - (3)
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
