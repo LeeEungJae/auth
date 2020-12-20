@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -32,6 +33,16 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         return userInfoRepository.save(UserInfo.builder().email(infoDto.getEmail()).auth(infoDto.getAuth())
                 .password(infoDto.getPassword()).build()).getCode();
+    }
+
+    @Transactional
+    @Override
+    public int deleteId(String email) {
+
+        int num = userInfoRepository.deleteByEmail(email);
+
+        return num;
+
     }
 
 }

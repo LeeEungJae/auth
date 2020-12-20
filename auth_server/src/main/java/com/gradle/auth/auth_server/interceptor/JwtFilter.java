@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gradle.auth.auth_server.component.JwtTokenEncoder;
-import com.gradle.auth.auth_server.service.impl.UserServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -65,7 +64,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getServletPath().contains("/api/mail");
+        return request.getServletPath().contains("/api/signup");
+
     }
 
     @Override
@@ -84,7 +84,6 @@ public class JwtFilter extends OncePerRequestFilter {
             String jwtToken = null;
 
             if (requestTokenHeader != null) {
-                // jwtToken = requestTokenHeader.substring(7);
                 jwtToken = requestTokenHeader;
                 logger.info("token in requestfilter: " + jwtToken);
 
@@ -104,15 +103,14 @@ public class JwtFilter extends OncePerRequestFilter {
             } else if (redisTemplate.opsForValue().get(jwtToken) != null) {
                 logger.warn("this token already logout!");
             } else {
-                // DB access 대신에 파싱한 정보로 유저 만들기!
+
                 Authentication authen = getAuthentication(jwtToken);
-                // 만든 authentication 객체로 매번 인증받기
+
                 SecurityContextHolder.getContext().setAuthentication(authen);
                 response.setHeader("username", username);
             }
             filterChain.doFilter(request, response);
         }
-
     }
 
 }

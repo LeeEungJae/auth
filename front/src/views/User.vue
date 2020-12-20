@@ -1,15 +1,16 @@
 <template>
   <div>
     <div v-if="$store.state.user.auth == 'ROLE_USER'"><UserInfo /></div>
-    <div v-if="$store.state.user.auth == 'ROLE_ADMIN'">어드민입니다.</div>
+    <div v-if="$store.state.user.auth == 'ROLE_ADMIN'"><AdminInfo /></div>
   </div>
 </template>
 
 <script>
 import http from "@/api//http-common.js";
 import UserInfo from "@/components/UserInfo";
+import AdminInfo from "@/components/AdminInfo";
 export default {
-  components: { UserInfo },
+  components: { UserInfo, AdminInfo },
   data() {
     return {};
   },

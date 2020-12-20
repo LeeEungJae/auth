@@ -1,10 +1,13 @@
 package com.gradle.auth.auth_server.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.gradle.auth.auth_server.component.JwtTokenEncoder;
 import com.gradle.auth.auth_server.dto.UserInfoDto;
+import com.gradle.auth.auth_server.entity.UserInfo;
 import com.gradle.auth.auth_server.entity.UserInfoRepository;
 import com.gradle.auth.auth_server.service.impl.EmailServiceImpl;
 import com.gradle.auth.auth_server.service.impl.UserServiceImpl;
@@ -15,6 +18,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,6 +65,7 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         if (userInfoRepository.findByEmail(email).isEmpty()) {
             if (userInfo.getAuth().equals("admin")) {
+                System.out.println("???");
                 userInfo.setAuth("ROLE_ADMIN");
             } else {
                 userInfo.setAuth("ROLE_USER");
@@ -81,6 +86,13 @@ public class UserController {
         return "redirect:/login";
     }
 
+    @GetMapping("/api/user")
+    public List<UserInfo> getUserInfo() throws Exception {
+        List<UserInfo> userList = new ArrayList<UserInfo>();
+        userList = userInfoRepository.findAll();
+        return userList;
+    }
+
     @PostMapping("/api/signin")
     public Map<String, Object> signIn(@RequestBody UserInfoDto userInfo) throws Exception {
         String email = userInfo.getEmail();
@@ -98,6 +110,19 @@ public class UserController {
 
         Map<String, Object> map = new HashMap<>();
         map.put("success", accessToken);
+        return map;
+    }
+
+    @DeleteMapping("/admin/user")
+    public Map<String, Object> deleteUser(@RequestParam String email) throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        int result = userServiceImpl.deleteId(email);
+        System.out.println(result);
+        if (result != 0) {
+            map.put("success", result);
+        } else {
+            map.put("fail", email);
+        }
         return map;
     }
 

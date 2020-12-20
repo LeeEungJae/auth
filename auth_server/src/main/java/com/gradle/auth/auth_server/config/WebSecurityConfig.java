@@ -42,9 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.httpBasic().disable().cors().and().csrf().disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers("/api/signin", "/api/signup", "/api/mail").permitAll().and().authorizeRequests()
-                .antMatchers("/admin/**").hasRole("ADMIN").and().authorizeRequests().antMatchers("/user/**")
-                .hasAnyRole("USER", "ADMIN").and().authorizeRequests().anyRequest().authenticated().and()
-                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
+                .antMatchers("/admin/user").hasRole("ADMIN").and().authorizeRequests().anyRequest().authenticated()
+                .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     }
@@ -73,10 +72,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception { // 10
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder()); // 해당 서비스(userService)에서는
-                                                                                 // UserDetailsService를 implements해서
-                                                                                 // loadUserByUsername() 구현해야함 (서비스 참고)
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+
     }
 
 }
