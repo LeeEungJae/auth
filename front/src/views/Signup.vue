@@ -17,6 +17,30 @@
           v-model="email"
         />
         <input
+          type="button"
+          class="fadeIn fourth"
+          value="이메일 인증"
+          @click="emailCheck"
+        />
+
+        <div v-if="authCode != ''">
+          <input
+            type="text"
+            id="login"
+            class="fadeIn second"
+            name="login"
+            placeholder="email"
+            v-model="code"
+          />
+          <input
+            type="button"
+            class="fadeIn fourth"
+            value="확인"
+            @click="codeCheck"
+          />
+        </div>
+
+        <input
           type="password"
           id="password"
           class="fadeIn third"
@@ -40,20 +64,50 @@
 import http from "@/api//http-common.js";
 export default {
   data() {
-    return { email: "", password: "" };
+    return {
+      email: "",
+      password: "",
+      emailAuth: false,
+      authCode: "",
+      code: "",
+    };
   },
   methods: {
     signup() {
+      if (this.emailAuth == true) {
+        http
+          .post("http://localhost:9000/api/signup", {
+            email: this.email,
+            password: this.password,
+            auth: "user",
+          })
+          .then((result) => {
+            console.log(result.data);
+            this.$router.push({ path: "/login" });
+          });
+      } else {
+        alert("이메일 인증을 완료해주세요!");
+      }
+    },
+    emailCheck() {
       http
-        .post("http://localhost:9000/api/signup", {
-          email: this.email,
-          password: this.password,
-          auth: "user",
+        .get("http://localhost:9000/api/mail", {
+          params: {
+            email: this.email,
+          },
         })
         .then((result) => {
           console.log(result.data);
-          this.$router.push({ path: "/login" });
+          this.authCode = result.data.success;
         });
+    },
+    codeCheck() {
+      if (this.authCode == this.code) {
+        this.emailAuth = true;
+        alert("이메일 인증이 완료되었습니다.");
+      } else {
+        alert("인증코드가 일치하지 않습니다.");
+      }
     },
   },
 };

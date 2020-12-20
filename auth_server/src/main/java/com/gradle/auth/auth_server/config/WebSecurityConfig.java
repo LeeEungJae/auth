@@ -41,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.httpBasic().disable().cors().and().csrf().disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers("/api/signin", "/api/signup").permitAll().and().authorizeRequests()
+                .antMatchers("/api/signin", "/api/signup", "/api/mail").permitAll().and().authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN").and().authorizeRequests().antMatchers("/user/**")
                 .hasAnyRole("USER", "ADMIN").and().authorizeRequests().anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
