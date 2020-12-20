@@ -26,12 +26,10 @@ public class JwtTokenEncoder {
     public static final long JWT_ACCESS_TOKEN_VALIDITY = 10 * 60; // 10분
     public static final long JWT_REFRESH_TOKEN_VALIDITY = 24 * 60 * 60 * 7; // 일주일
 
-    // retrieve username from jwt token
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    // retrieve expiration date from jwt token
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
@@ -41,7 +39,6 @@ public class JwtTokenEncoder {
         return claimsResolver.apply(claims);
     }
 
-    // for retrieveing any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
@@ -54,13 +51,11 @@ public class JwtTokenEncoder {
         return result;
     }
 
-    // check if the token has expired
     public Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    // generate token for user
     public String generateAccessToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         List<String> li = new ArrayList<>();
