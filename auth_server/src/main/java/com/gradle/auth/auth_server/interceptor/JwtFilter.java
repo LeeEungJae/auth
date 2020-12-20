@@ -34,14 +34,11 @@ import io.jsonwebtoken.ExpiredJwtException;
 public class JwtFilter extends OncePerRequestFilter {
     private JwtTokenEncoder jwtTokenEncoder;
     private RedisTemplate<String, Object> redisTemplate;
-    private UserServiceImpl userServiceImpl;
 
     @Autowired
-    public JwtFilter(JwtTokenEncoder jwtTokenEncoder, RedisTemplate<String, Object> redisTemplate,
-            UserServiceImpl userServiceImpl) {
+    public JwtFilter(JwtTokenEncoder jwtTokenEncoder, RedisTemplate<String, Object> redisTemplate) {
         this.jwtTokenEncoder = jwtTokenEncoder;
         this.redisTemplate = redisTemplate;
-        this.userServiceImpl = userServiceImpl;
     }
 
     public Authentication getAuthentication(String token) {
@@ -68,7 +65,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getServletPath().contains("/api/signup");
+        return request.getServletPath().contains("/api/mail");
     }
 
     @Override

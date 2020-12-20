@@ -6,6 +6,7 @@ import java.util.Map;
 import com.gradle.auth.auth_server.component.JwtTokenEncoder;
 import com.gradle.auth.auth_server.dto.UserInfoDto;
 import com.gradle.auth.auth_server.entity.UserInfoRepository;
+import com.gradle.auth.auth_server.service.impl.EmailServiceImpl;
 import com.gradle.auth.auth_server.service.impl.UserServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -30,15 +32,27 @@ public class UserController {
     private JwtTokenEncoder jwtTokenEncoder;
     private AuthenticationManager am;
     private RedisTemplate<String, Object> redisTemplate;
+    private EmailServiceImpl emailServiceImpl;
 
     @Autowired
     public UserController(UserServiceImpl userServiceImpl, UserInfoRepository userInfoRepository,
-            JwtTokenEncoder jwtTokenEncoder, AuthenticationManager am, RedisTemplate<String, Object> redisTemplate) {
+            JwtTokenEncoder jwtTokenEncoder, AuthenticationManager am, RedisTemplate<String, Object> redisTemplate,
+            EmailServiceImpl emailServiceImpl) {
         this.userServiceImpl = userServiceImpl;
         this.userInfoRepository = userInfoRepository;
         this.jwtTokenEncoder = jwtTokenEncoder;
         this.redisTemplate = redisTemplate;
         this.am = am;
+        this.emailServiceImpl = emailServiceImpl;
+    }
+
+    @GetMapping("/api/mail")
+    public Map<String, Object> mailTest(@RequestParam String email) throws Exception {
+        System.out.println("mail test");
+        String code = emailServiceImpl.sendMessage(email);
+        Map<String, Object> map = new HashMap<>();
+        map.put("success", code);
+        return map;
     }
 
     @PostMapping("/api/signup")
